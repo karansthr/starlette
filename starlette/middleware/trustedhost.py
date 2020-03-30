@@ -6,8 +6,10 @@ import typing
 
 class TrustedHostMiddleware:
     def __init__(
-        self, app: ASGIApp, allowed_hosts: typing.Sequence[str] = ["*"]
+        self, app: ASGIApp, allowed_hosts: typing.Sequence[str] = None
     ) -> None:
+        if allowed_hosts is None:
+            allowed_hosts = ["*"]
         self.app = app
         self.allowed_hosts = allowed_hosts
         self.allow_any = "*" in allowed_hosts
