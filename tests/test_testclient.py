@@ -57,8 +57,8 @@ def test_error_on_startup():
 
 
 def test_testclient_asgi2():
-    def app(scope):
-        async def inner(receive, send):
+    def app(_scope):
+        async def inner(_receive, send):
             await send(
                 {
                     "type": "http.response.start",
@@ -76,7 +76,7 @@ def test_testclient_asgi2():
 
 
 def test_testclient_asgi3():
-    async def app(scope, receive, send):
+    async def app(_scope, _receive, send):
         await send(
             {
                 "type": "http.response.start",

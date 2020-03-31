@@ -16,12 +16,12 @@ app.add_middleware(TrustedHostMiddleware, allowed_hosts=["testserver", "*.exampl
 
 
 @app.exception_handler(500)
-async def error_500(request, exc):
+async def error_500(request, _exc):
     return JSONResponse({"detail": "Server Error"}, status_code=500)
 
 
 @app.exception_handler(405)
-async def method_not_allowed(request, exc):
+async def method_not_allowed(request, _exc):
     return JSONResponse({"detail": "Custom message"}, status_code=405)
 
 

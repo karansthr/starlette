@@ -204,7 +204,7 @@ def test_request_disconnect():
     then ClientDisconnect should be raised.
     """
 
-    async def app(scope, receive, send):
+    async def app(scope, receive, _send):
         request = Request(scope, receive)
         await request.body()
 

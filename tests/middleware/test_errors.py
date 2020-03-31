@@ -9,7 +9,7 @@ def test_handler():
     async def app(scope, receive, send):
         raise RuntimeError("Something went wrong")
 
-    def error_500(request, exc):
+    def error_500(request, _exc):
         return JSONResponse({"detail": "Server Error"}, status_code=500)
 
     app = ServerErrorMiddleware(app, handler=error_500)
