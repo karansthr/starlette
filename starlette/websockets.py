@@ -75,7 +75,8 @@ class WebSocket(HTTPConnection):
             await self.receive()
         await self.send({"type": "websocket.accept", "subprotocol": subprotocol})
 
-    def _raise_on_disconnect(self, message: Message) -> None:
+    @staticmethod
+    def _raise_on_disconnect(message: Message) -> None:
         if message["type"] == "websocket.disconnect":
             raise WebSocketDisconnect(message["code"])
 

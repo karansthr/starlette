@@ -74,7 +74,8 @@ class Config:
             return self._perform_cast(key, default, cast)
         raise KeyError(f"Config '{key}' is missing, and has no default.")
 
-    def _read_file(self, file_name: typing.Union[str, Path]) -> typing.Dict[str, str]:
+    @staticmethod
+    def _read_file(file_name: typing.Union[str, Path]) -> typing.Dict[str, str]:
         file_values = {}  # type: typing.Dict[str, str]
         with open(file_name) as input_file:
             for line in input_file.readlines():
@@ -86,8 +87,9 @@ class Config:
                     file_values[key] = value
         return file_values
 
+    @staticmethod
     def _perform_cast(
-        self, key: str, value: typing.Any, cast: typing.Callable = None,
+        key: str, value: typing.Any, cast: typing.Callable = None,
     ) -> typing.Any:
         if cast is None or value is None:
             return value

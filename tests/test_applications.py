@@ -42,7 +42,8 @@ async def async_homepage(request):
 
 @app.route("/class")
 class Homepage(HTTPEndpoint):
-    def get(self, request):
+    @staticmethod
+    def get(request):
         return PlainTextResponse("Hello, world!")
 
 

@@ -309,7 +309,8 @@ class WebSocketTestSession:
     async def _asgi_send(self, message: Message) -> None:
         self._send_queue.put(message)
 
-    def _raise_on_close(self, message: Message) -> None:
+    @staticmethod
+    def _raise_on_close(message: Message) -> None:
         if message["type"] == "websocket.close":
             raise WebSocketDisconnect(message.get("code", 1000))
 
