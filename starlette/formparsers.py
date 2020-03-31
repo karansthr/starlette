@@ -42,9 +42,10 @@ class FormParser:
     def __init__(
         self, headers: Headers, stream: typing.AsyncGenerator[bytes, None]
     ) -> None:
-        assert (
-            multipart is not None
-        ), "The `python-multipart` library must be installed to use form parsing."
+        if (
+            multipart is None
+        ):
+            raise AssertionError("The `python-multipart` library must be installed to use form parsing.")
         self.headers = headers
         self.stream = stream
         self.messages = []  # type: typing.List[typing.Tuple[FormMessage, bytes]]
@@ -118,9 +119,10 @@ class MultiPartParser:
     def __init__(
         self, headers: Headers, stream: typing.AsyncGenerator[bytes, None]
     ) -> None:
-        assert (
-            multipart is not None
-        ), "The `python-multipart` library must be installed to use form parsing."
+        if (
+            multipart is None
+        ):
+            raise AssertionError("The `python-multipart` library must be installed to use form parsing.")
         self.headers = headers
         self.stream = stream
         self.messages = []  # type: typing.List[typing.Tuple[MultiPartMessage, bytes]]

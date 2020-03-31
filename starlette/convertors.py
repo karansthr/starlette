@@ -20,7 +20,8 @@ class StringConvertor(Convertor):
 
     def to_string(self, value: typing.Any) -> str:
         value = str(value)
-        assert "/" not in value, "May not contain path separators"
+        if "/" in value:
+            raise AssertionError("May not contain path separators")
         assert value, "Must not be empty"
         return value
 
@@ -43,7 +44,8 @@ class IntegerConvertor(Convertor):
 
     def to_string(self, value: typing.Any) -> str:
         value = int(value)
-        assert value >= 0, "Negative integers are not supported"
+        if value < 0:
+            raise AssertionError("Negative integers are not supported")
         return str(value)
 
 
@@ -55,9 +57,12 @@ class FloatConvertor(Convertor):
 
     def to_string(self, value: typing.Any) -> str:
         value = float(value)
-        assert value >= 0.0, "Negative floats are not supported"
-        assert not math.isnan(value), "NaN values are not supported"
-        assert not math.isinf(value), "Infinite values are not supported"
+        if value < 0.0:
+            raise AssertionError("Negative floats are not supported")
+        if math.isnan(value):
+            raise AssertionError("NaN values are not supported")
+        if math.isinf(value):
+            raise AssertionError("Infinite values are not supported")
         return ("%0.20f" % value).rstrip("0").rstrip(".")
 
 

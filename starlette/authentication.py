@@ -42,7 +42,8 @@ def requires(
                 *args: typing.Any, **kwargs: typing.Any
             ) -> None:
                 websocket = kwargs.get("websocket", args[idx])
-                assert isinstance(websocket, WebSocket)
+                if not isinstance(websocket, WebSocket):
+                    raise AssertionError
 
                 if not has_required_scope(websocket, scopes_list):
                     await websocket.close()
@@ -58,7 +59,8 @@ def requires(
                 *args: typing.Any, **kwargs: typing.Any
             ) -> Response:
                 request = kwargs.get("request", args[idx])
-                assert isinstance(request, Request)
+                if not isinstance(request, Request):
+                    raise AssertionError
 
                 if not has_required_scope(request, scopes_list):
                     if redirect is not None:
@@ -73,7 +75,8 @@ def requires(
             @functools.wraps(func)
             def sync_wrapper(*args: typing.Any, **kwargs: typing.Any) -> Response:
                 request = kwargs.get("request", args[idx])
-                assert isinstance(request, Request)
+                if not isinstance(request, Request):
+                    raise AssertionError
 
                 if not has_required_scope(request, scopes_list):
                     if redirect is not None:

@@ -13,7 +13,8 @@ from starlette.websockets import WebSocket
 
 class HTTPEndpoint:
     def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        assert scope["type"] == "http"
+        if scope["type"] != "http":
+            raise AssertionError
         self.scope = scope
         self.receive = receive
         self.send = send
@@ -46,7 +47,8 @@ class WebSocketEndpoint:
     encoding = None  # May be "text", "bytes", or "json".
 
     def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        assert scope["type"] == "websocket"
+        if scope["type"] != "websocket":
+            raise AssertionError
         self.scope = scope
         self.receive = receive
         self.send = send
@@ -101,9 +103,10 @@ class WebSocketEndpoint:
                 await websocket.close(code=status.WS_1003_UNSUPPORTED_DATA)
                 raise RuntimeError("Malformed JSON data received.")
 
-        assert (
-            self.encoding is None
-        ), f"Unsupported 'encoding' attribute {self.encoding}"
+        if (
+            self.encoding is not None
+        ):
+            raise AssertionError(f"Unsupported 'encoding' attribute {self.encoding}")
         return message["text"] if message.get("text") else message["bytes"]
 
     async def on_connect(self, websocket: WebSocket) -> None:

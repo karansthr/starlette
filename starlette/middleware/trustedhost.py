@@ -18,9 +18,11 @@ class TrustedHostMiddleware:
             allowed_hosts = ["*"]
 
         for pattern in allowed_hosts:
-            assert "*" not in pattern[1:], ENFORCE_DOMAIN_WILDCARD
+            if "*" in pattern[1:]:
+                raise AssertionError(ENFORCE_DOMAIN_WILDCARD)
             if pattern.startswith("*") and pattern != "*":
-                assert pattern.startswith("*."), ENFORCE_DOMAIN_WILDCARD
+                if not pattern.startswith("*."):
+                    raise AssertionError(ENFORCE_DOMAIN_WILDCARD)
         self.app = app
         self.allowed_hosts = list(allowed_hosts)
         self.allow_any = "*" in allowed_hosts

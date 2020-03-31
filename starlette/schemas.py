@@ -15,10 +15,12 @@ class OpenAPIResponse(Response):
     media_type = "application/vnd.oai.openapi"
 
     def render(self, content: typing.Any) -> bytes:
-        assert yaml is not None, "`pyyaml` must be installed to use OpenAPIResponse."
-        assert isinstance(
+        if yaml is None:
+            raise AssertionError("`pyyaml` must be installed to use OpenAPIResponse.")
+        if not isinstance(
             content, dict
-        ), "The schema passed to OpenAPIResponse should be a dictionary."
+        ):
+            raise AssertionError("The schema passed to OpenAPIResponse should be a dictionary.")
         return yaml.dump(content, default_flow_style=False).encode("utf-8")
 
 
@@ -90,7 +92,8 @@ class BaseSchemaGenerator:
         if not docstring:
             return {}
 
-        assert yaml is not None, "`pyyaml` must be installed to use parse_docstring."
+        if yaml is None:
+            raise AssertionError("`pyyaml` must be installed to use parse_docstring.")
 
         # We support having regular docstrings before the schema
         # definition. Here we return just the schema part from

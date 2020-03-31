@@ -198,9 +198,8 @@ class _ASGIAdapter(requests.adapters.HTTPAdapter):
             nonlocal raw_kwargs, response_started, response_complete, template, context
 
             if message["type"] == "http.response.start":
-                assert (
-                    not response_started
-                ), 'Received multiple "http.response.start" messages.'
+                if response_started:
+                    raise AssertionError('Received multiple "http.response.start" messages.')
                 raw_kwargs["version"] = 11
                 raw_kwargs["status"] = message["status"]
                 raw_kwargs["reason"] = _get_reason_phrase(message["status"])
@@ -216,9 +215,8 @@ class _ASGIAdapter(requests.adapters.HTTPAdapter):
                 assert (
                     response_started
                 ), 'Received "http.response.body" without "http.response.start".'
-                assert (
-                    not response_complete
-                ), 'Received "http.response.body" after response completed.'
+                if response_complete:
+                    raise AssertionError('Received "http.response.body" after response completed.')
                 body = message.get("body", b"")
                 more_body = message.get("more_body", False)
                 if request.method != "HEAD":
@@ -324,7 +322,8 @@ class WebSocketTestSession:
         self.send({"type": "websocket.receive", "bytes": data})
 
     def send_json(self, data: typing.Any, mode: str = "text") -> None:
-        assert mode in ["text", "binary"]
+        if mode not in ["text", "binary"]:
+            raise AssertionError
         text = json.dumps(data)
         if mode == "text":
             self.send({"type": "websocket.receive", "text": text})
@@ -351,7 +350,8 @@ class WebSocketTestSession:
         return message["bytes"]
 
     def receive_json(self, mode: str = "text") -> typing.Any:
-        assert mode in ["text", "binary"]
+        if mode not in ["text", "binary"]:
+            raise AssertionError
         message = self.receive()
         self._raise_on_close(message)
         if mode == "text":
@@ -472,10 +472,11 @@ class TestClient(requests.Session):
     async def wait_startup(self) -> None:
         await self.receive_queue.put({"type": "lifespan.startup"})
         message = await self.send_queue.get()
-        assert message["type"] in (
+        if message["type"] not in (
             "lifespan.startup.complete",
             "lifespan.startup.failed",
-        )
+        ):
+            raise AssertionError
         if message["type"] == "lifespan.startup.failed":
             message = await self.send_queue.get()
             if message is None:
@@ -486,5 +487,6 @@ class TestClient(requests.Session):
         message = await self.send_queue.get()
         if message is None:
             self.task.result()
-        assert message["type"] == "lifespan.shutdown.complete"
+        if message["type"] != "lifespan.shutdown.complete":
+            raise AssertionError
         await self.task

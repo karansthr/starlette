@@ -16,8 +16,10 @@ class URL:
         self, url: str = "", scope: Scope = None, **components: typing.Any
     ) -> None:
         if scope is not None:
-            assert not url, 'Cannot set both "url" and "scope".'
-            assert not components, 'Cannot set both "scope" and "**components".'
+            if url:
+                raise AssertionError('Cannot set both "url" and "scope".')
+            if components:
+                raise AssertionError('Cannot set both "scope" and "**components".')
             scheme = scope.get("scheme", "http")
             server = scope.get("server", None)
             path = scope.get("root_path", "") + scope["path"]
@@ -44,7 +46,8 @@ class URL:
             if query_string:
                 url += "?" + query_string.decode()
         elif components:
-            assert not url, 'Cannot set both "url" and "**components".'
+            if url:
+                raise AssertionError('Cannot set both "url" and "**components".')
             url = URL("").replace(**components).components.geturl()
 
         self._url = url
@@ -162,7 +165,8 @@ class URLPath(str):
     """
 
     def __new__(cls, path: str, protocol: str = "", _host: str = "") -> "URLPath":
-        assert protocol in ("http", "websocket", "")
+        if protocol not in ("http", "websocket", ""):
+            raise AssertionError
         return str.__new__(cls, path)  # type: ignore
 
     def __init__(self, _path: str, protocol: str = "", host: str = "") -> None:
@@ -244,7 +248,8 @@ class ImmutableMultiDict(typing.Mapping):
         ],
         **kwargs: typing.Any,
     ) -> None:
-        assert len(args) < 2, "Too many arguments."
+        if len(args) >= 2:
+            raise AssertionError("Too many arguments.")
 
         if args:
             value = args[0]
@@ -393,7 +398,8 @@ class QueryParams(ImmutableMultiDict):
         ],
         **kwargs: typing.Any,
     ) -> None:
-        assert len(args) < 2, "Too many arguments."
+        if len(args) >= 2:
+            raise AssertionError("Too many arguments.")
 
         value = args[0] if args else []
 
@@ -481,14 +487,17 @@ class Headers(typing.Mapping[str, str]):
     ) -> None:
         self._list = []  # type: typing.List[typing.Tuple[bytes, bytes]]
         if headers is not None:
-            assert raw is None, 'Cannot set both "headers" and "raw".'
-            assert scope is None, 'Cannot set both "headers" and "scope".'
+            if raw is not None:
+                raise AssertionError('Cannot set both "headers" and "raw".')
+            if scope is not None:
+                raise AssertionError('Cannot set both "headers" and "scope".')
             self._list = [
                 (key.lower().encode("latin-1"), value.encode("latin-1"))
                 for key, value in headers.items()
             ]
         elif raw is not None:
-            assert scope is None, 'Cannot set both "raw" and "scope".'
+            if scope is not None:
+                raise AssertionError('Cannot set both "raw" and "scope".')
             self._list = raw
         elif scope is not None:
             self._list = scope["headers"]

@@ -116,11 +116,12 @@ class Response:
         if httponly:
             cookie[key]["httponly"] = True
         if samesite is not None:
-            assert samesite.lower() in [
+            if samesite.lower() not in [
                 "strict",
                 "lax",
                 "none",
-            ], "samesite must be either 'strict', 'lax' or 'none'"
+            ]:
+                raise AssertionError("samesite must be either 'strict', 'lax' or 'none'")
             cookie[key]["samesite"] = samesite
         cookie_val = cookie.output(header="").strip()
         self.raw_headers.append((b"set-cookie", cookie_val.encode("latin-1")))
@@ -167,7 +168,8 @@ class UJSONResponse(JSONResponse):
     media_type = "application/json"
 
     def render(self, content: typing.Any) -> bytes:
-        assert ujson is not None, "ujson must be installed to use UJSONResponse"
+        if ujson is None:
+            raise AssertionError("ujson must be installed to use UJSONResponse")
         return ujson.dumps(content, ensure_ascii=False).encode("utf-8")
 
 
@@ -242,7 +244,8 @@ class FileResponse(Response):
         stat_result: os.stat_result = None,
         method: str = None,
     ) -> None:
-        assert aiofiles is not None, "'aiofiles' must be installed to use FileResponse"
+        if aiofiles is None:
+            raise AssertionError("'aiofiles' must be installed to use FileResponse")
         self.path = path
         self.status_code = status_code
         self.filename = filename

@@ -57,7 +57,8 @@ class WSGIMiddleware:
         self.app = app
 
     async def __call__(self, scope: Scope, receive: Receive, send: Send) -> None:
-        assert scope["type"] == "http"
+        if scope["type"] != "http":
+            raise AssertionError
         responder = WSGIResponder(self.app, scope)
         await responder(receive, send)
 

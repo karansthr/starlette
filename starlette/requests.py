@@ -34,7 +34,8 @@ class HTTPConnection(Mapping):
     """
 
     def __init__(self, scope: Scope, _receive: Receive = None) -> None:
-        assert scope["type"] in ("http", "websocket")
+        if scope["type"] not in ("http", "websocket"):
+            raise AssertionError
         self.scope = scope
 
     def __getitem__(self, key: str) -> str:
@@ -107,23 +108,26 @@ class HTTPConnection(Mapping):
 
     @property
     def session(self) -> dict:
-        assert (
-            "session" in self.scope
-        ), "SessionMiddleware must be installed to access request.session"
+        if (
+            "session" not in self.scope
+        ):
+            raise AssertionError("SessionMiddleware must be installed to access request.session")
         return self.scope["session"]
 
     @property
     def auth(self) -> typing.Any:
-        assert (
-            "auth" in self.scope
-        ), "AuthenticationMiddleware must be installed to access request.auth"
+        if (
+            "auth" not in self.scope
+        ):
+            raise AssertionError("AuthenticationMiddleware must be installed to access request.auth")
         return self.scope["auth"]
 
     @property
     def user(self) -> typing.Any:
-        assert (
-            "user" in self.scope
-        ), "AuthenticationMiddleware must be installed to access request.user"
+        if (
+            "user" not in self.scope
+        ):
+            raise AssertionError("AuthenticationMiddleware must be installed to access request.user")
         return self.scope["user"]
 
     @property
@@ -154,7 +158,8 @@ class Request(HTTPConnection):
         self, scope: Scope, receive: Receive = empty_receive, send: Send = empty_send
     ):
         super().__init__(scope)
-        assert scope["type"] == "http"
+        if scope["type"] != "http":
+            raise AssertionError
         self._receive = receive
         self._send = send
         self._stream_consumed = False
@@ -207,9 +212,10 @@ class Request(HTTPConnection):
 
     async def form(self) -> FormData:
         if not hasattr(self, "_form"):
-            assert (
-                parse_options_header is not None
-            ), "The `python-multipart` library must be installed to use form parsing."
+            if (
+                parse_options_header is None
+            ):
+                raise AssertionError("The `python-multipart` library must be installed to use form parsing.")
             content_type_header = self.headers.get("Content-Type")
             content_type, options = parse_options_header(content_type_header)
             if content_type == b"multipart/form-data":

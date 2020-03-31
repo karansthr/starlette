@@ -44,14 +44,16 @@ class BaseHTTPMiddleware:
         if message is None:
             task.result()
             raise RuntimeError("No response returned.")
-        assert message["type"] == "http.response.start"
+        if message["type"] != "http.response.start":
+            raise AssertionError
 
         async def body_stream() -> typing.AsyncGenerator[bytes, None]:
             while True:
                 message = await queue.get()
                 if message is None:
                     break
-                assert message["type"] == "http.response.body"
+                if message["type"] != "http.response.body":
+                    raise AssertionError
                 yield message["body"]
             task.result()
 
