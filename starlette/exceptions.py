@@ -92,7 +92,8 @@ class ExceptionMiddleware:
                 response = await run_in_threadpool(handler, request, exc)
             await response(scope, receive, sender)
 
-    def http_exception(self, request: Request, exc: HTTPException) -> Response:
+    @staticmethod
+    def http_exception(request: Request, exc: HTTPException) -> Response:
         if exc.status_code in {204, 304}:
             return Response(b"", status_code=exc.status_code)
         return PlainTextResponse(exc.detail, status_code=exc.status_code)
