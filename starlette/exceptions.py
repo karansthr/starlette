@@ -42,7 +42,8 @@ class ExceptionMiddleware:
         if isinstance(exc_class_or_status_code, int):
             self._status_handlers[exc_class_or_status_code] = handler
         else:
-            assert issubclass(exc_class_or_status_code, Exception)
+            if not issubclass(exc_class_or_status_code, Exception):
+                raise AssertionError
             self._exception_handlers[exc_class_or_status_code] = handler
 
     def _lookup_exception_handler(

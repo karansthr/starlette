@@ -68,14 +68,17 @@ class StaticFiles:
 
         for package in packages or []:
             spec = importlib.util.find_spec(package)
-            assert spec is not None, f"Package {package!r} could not be found."
-            assert (
-                spec.origin is not None
-            ), f"Directory 'statics' in package {package!r} could not be found."
+            if spec is None:
+                raise AssertionError(f"Package {package!r} could not be found.")
+            if (
+                spec.origin is None
+            ):
+                raise AssertionError(f"Directory 'statics' in package {package!r} could not be found.")
             directory = os.path.normpath(os.path.join(spec.origin, "..", "statics"))
-            assert os.path.isdir(
+            if not os.path.isdir(
                 directory
-            ), f"Directory 'statics' in package {package!r} could not be found."
+            ):
+                raise AssertionError(f"Directory 'statics' in package {package!r} could not be found.")
             directories.append(directory)
 
         return directories
@@ -84,7 +87,8 @@ class StaticFiles:
         """
         The ASGI entry point.
         """
-        assert scope["type"] == "http"
+        if scope["type"] != "http":
+            raise AssertionError
 
         if not self.config_checked:
             await self.check_config()

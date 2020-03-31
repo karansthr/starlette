@@ -102,9 +102,10 @@ def compile_path(
     for match in PARAM_REGEX.finditer(path):
         param_name, convertor_type = match.groups("str")
         convertor_type = convertor_type.lstrip(":")
-        assert (
-            convertor_type in CONVERTOR_TYPES
-        ), f"Unknown path convertor '{convertor_type}'"
+        if (
+            convertor_type not in CONVERTOR_TYPES
+        ):
+            raise AssertionError(f"Unknown path convertor '{convertor_type}'")
         convertor = CONVERTOR_TYPES[convertor_type]
 
         path_regex += path[idx : match.start()]
@@ -163,7 +164,8 @@ class Route(BaseRoute):
         name: str = None,
         include_in_schema: bool = True,
     ) -> None:
-        assert path.startswith("/"), "Routed paths must start with '/'"
+        if not path.startswith("/"):
+            raise AssertionError("Routed paths must start with '/'")
         self.path = path
         self.endpoint = endpoint
         self.name = get_name(endpoint) if name is None else name
@@ -213,7 +215,8 @@ class Route(BaseRoute):
         path, remaining_params = replace_params(
             self.path_format, self.param_convertors, path_params
         )
-        assert not remaining_params
+        if remaining_params:
+            raise AssertionError
         return URLPath(path=path, protocol="http")
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -239,7 +242,8 @@ class WebSocketRoute(BaseRoute):
     def __init__(
         self, path: str, endpoint: typing.Callable, *, name: str = None
     ) -> None:
-        assert path.startswith("/"), "Routed paths must start with '/'"
+        if not path.startswith("/"):
+            raise AssertionError("Routed paths must start with '/'")
         self.path = path
         self.endpoint = endpoint
         self.name = get_name(endpoint) if name is None else name
@@ -276,7 +280,8 @@ class WebSocketRoute(BaseRoute):
         path, remaining_params = replace_params(
             self.path_format, self.param_convertors, path_params
         )
-        assert not remaining_params
+        if remaining_params:
+            raise AssertionError
         return URLPath(path=path, protocol="websocket")
 
     async def handle(self, scope: Scope, receive: Receive, send: Send) -> None:
@@ -511,7 +516,8 @@ class Router:
         startup and shutdown events.
         """
         message = await receive()
-        assert message["type"] == "lifespan.startup"
+        if message["type"] != "lifespan.startup":
+            raise AssertionError
 
         try:
             await self.startup()
@@ -522,7 +528,8 @@ class Router:
 
         await send({"type": "lifespan.startup.complete"})
         message = await receive()
-        assert message["type"] == "lifespan.shutdown"
+        if message["type"] != "lifespan.shutdown":
+            raise AssertionError
         await self.shutdown()
         await send({"type": "lifespan.shutdown.complete"})
 
@@ -530,7 +537,8 @@ class Router:
         """
         The main entry point to the Router class.
         """
-        assert scope["type"] in ("http", "websocket", "lifespan")
+        if scope["type"] not in ("http", "websocket", "lifespan"):
+            raise AssertionError
 
         if "router" not in scope:
             scope["router"] = self
@@ -641,7 +649,8 @@ class Router:
         return decorator
 
     def add_event_handler(self, event_type: str, func: typing.Callable) -> None:
-        assert event_type in ("startup", "shutdown")
+        if event_type not in ("startup", "shutdown"):
+            raise AssertionError
 
         if event_type == "startup":
             self.on_startup.append(func)

@@ -49,7 +49,8 @@ class Jinja2Templates:
     """
 
     def __init__(self, directory: str) -> None:
-        assert jinja2 is not None, "jinja2 must be installed to use Jinja2Templates"
+        if jinja2 is None:
+            raise AssertionError("jinja2 must be installed to use Jinja2Templates")
         self.env = self.get_env(directory)
 
     @staticmethod

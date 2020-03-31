@@ -20,7 +20,8 @@ class WebSocketDisconnect(Exception):
 class WebSocket(HTTPConnection):
     def __init__(self, scope: Scope, receive: Receive, send: Send) -> None:
         super().__init__(scope)
-        assert scope["type"] == "websocket"
+        if scope["type"] != "websocket":
+            raise AssertionError
         self._receive = receive
         self._send = send
         self.client_state = WebSocketState.CONNECTING
@@ -33,13 +34,15 @@ class WebSocket(HTTPConnection):
         if self.client_state == WebSocketState.CONNECTING:
             message = await self._receive()
             message_type = message["type"]
-            assert message_type == "websocket.connect"
+            if message_type != "websocket.connect":
+                raise AssertionError
             self.client_state = WebSocketState.CONNECTED
             return message
         elif self.client_state == WebSocketState.CONNECTED:
             message = await self._receive()
             message_type = message["type"]
-            assert message_type in {"websocket.receive", "websocket.disconnect"}
+            if message_type not in {"websocket.receive", "websocket.disconnect"}:
+                raise AssertionError
             if message_type == "websocket.disconnect":
                 self.client_state = WebSocketState.DISCONNECTED
             return message
@@ -54,7 +57,8 @@ class WebSocket(HTTPConnection):
         """
         if self.application_state == WebSocketState.CONNECTING:
             message_type = message["type"]
-            assert message_type in {"websocket.accept", "websocket.close"}
+            if message_type not in {"websocket.accept", "websocket.close"}:
+                raise AssertionError
             if message_type == "websocket.close":
                 self.application_state = WebSocketState.DISCONNECTED
             else:
@@ -62,7 +66,8 @@ class WebSocket(HTTPConnection):
             await self._send(message)
         elif self.application_state == WebSocketState.CONNECTED:
             message_type = message["type"]
-            assert message_type in {"websocket.send", "websocket.close"}
+            if message_type not in {"websocket.send", "websocket.close"}:
+                raise AssertionError
             if message_type == "websocket.close":
                 self.application_state = WebSocketState.DISCONNECTED
             await self._send(message)
@@ -81,20 +86,24 @@ class WebSocket(HTTPConnection):
             raise WebSocketDisconnect(message["code"])
 
     async def receive_text(self) -> str:
-        assert self.application_state == WebSocketState.CONNECTED
+        if self.application_state != WebSocketState.CONNECTED:
+            raise AssertionError
         message = await self.receive()
         self._raise_on_disconnect(message)
         return message["text"]
 
     async def receive_bytes(self) -> bytes:
-        assert self.application_state == WebSocketState.CONNECTED
+        if self.application_state != WebSocketState.CONNECTED:
+            raise AssertionError
         message = await self.receive()
         self._raise_on_disconnect(message)
         return message["bytes"]
 
     async def receive_json(self, mode: str = "text") -> typing.Any:
-        assert mode in ["text", "binary"]
-        assert self.application_state == WebSocketState.CONNECTED
+        if mode not in ["text", "binary"]:
+            raise AssertionError
+        if self.application_state != WebSocketState.CONNECTED:
+            raise AssertionError
         message = await self.receive()
         self._raise_on_disconnect(message)
 
@@ -132,7 +141,8 @@ class WebSocket(HTTPConnection):
         await self.send({"type": "websocket.send", "bytes": data})
 
     async def send_json(self, data: typing.Any, mode: str = "text") -> None:
-        assert mode in ["text", "binary"]
+        if mode not in ["text", "binary"]:
+            raise AssertionError
         text = json.dumps(data)
         if mode == "text":
             await self.send({"type": "websocket.send", "text": text})
