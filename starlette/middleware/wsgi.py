@@ -4,7 +4,7 @@ import sys
 import typing
 
 from starlette.concurrency import run_in_threadpool
-from starlette.types import Message, Receive, Scope, Send
+from starlette.types import Receive, Scope, Send
 
 
 def build_environ(scope: Scope, body: bytes) -> dict:

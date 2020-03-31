@@ -9,10 +9,8 @@ from starlette.responses import HTMLResponse, JSONResponse, PlainTextResponse, R
 from starlette.types import Receive, Scope, Send
 
 try:
-    import graphene
     from graphql.execution.executors.asyncio import AsyncioExecutor
     from graphql.error import format_error as format_graphql_error
-    from graphql.error import GraphQLError
 except ImportError:  # pragma: nocover
     graphene = None
     AsyncioExecutor = None  # type: ignore
