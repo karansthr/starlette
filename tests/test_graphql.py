@@ -21,10 +21,12 @@ class Query(graphene.ObjectType):
     hello = graphene.String(name=graphene.String(default_value="stranger"))
     whoami = graphene.String()
 
-    def resolve_hello(self, info, name):
+    @staticmethod
+    def resolve_hello(info, name):
         return "Hello " + name
 
-    def resolve_whoami(self, info):
+    @staticmethod
+    def resolve_whoami(info):
         return (
             "a mystery"
             if info.context["request"]["user"] is None

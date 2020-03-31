@@ -85,7 +85,8 @@ def dashboard_sync(request):
 @app.route("/dashboard/class")
 class Dashboard(HTTPEndpoint):
     @requires("authenticated")
-    def get(self, request):
+    @staticmethod
+    def get(request):
         return JSONResponse(
             {
                 "authenticated": request.user.is_authenticated,

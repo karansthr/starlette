@@ -54,8 +54,9 @@ class StaticFiles:
         if check_dir and directory is not None and not os.path.isdir(directory):
             raise RuntimeError(f"Directory '{directory}' does not exist")
 
+    @staticmethod
     def get_directories(
-        self, directory: str = None, packages: typing.List[str] = None
+        directory: str = None, packages: typing.List[str] = None
     ) -> typing.List[str]:
         """
         Given `directory` and `packages` arguments, return a list of all the
@@ -93,7 +94,8 @@ class StaticFiles:
         response = await self.get_response(path, scope)
         await response(scope, receive, send)
 
-    def get_path(self, scope: Scope) -> str:
+    @staticmethod
+    def get_path(scope: Scope) -> str:
         """
         Given the ASGI scope, return the `path` string to serve up,
         with OS specific path seperators, and any '..', '.' components removed.
@@ -191,8 +193,9 @@ class StaticFiles:
                 f"StaticFiles path '{self.directory}' is not a directory."
             )
 
+    @staticmethod
     def is_not_modified(
-        self, response_headers: Headers, request_headers: Headers
+        response_headers: Headers, request_headers: Headers
     ) -> bool:
         """
         Given the request and response headers, return `True` if an HTTP

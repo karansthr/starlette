@@ -81,7 +81,8 @@ class BaseSchemaGenerator:
 
         return endpoints_info
 
-    def parse_docstring(self, func_or_method: typing.Callable) -> dict:
+    @staticmethod
+    def parse_docstring(func_or_method: typing.Callable) -> dict:
         """
         Given a function, parse the docstring as YAML and return a dictionary of info.
         """
