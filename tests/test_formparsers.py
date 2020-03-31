@@ -70,7 +70,7 @@ async def app_read_body(scope, receive, send):
     await response(scope, receive, send)
 
 
-def test_multipart_request_data(tmpdir):
+def test_multipart_request_data(_tmpdir):
     client = TestClient(app)
     response = client.post("/", data={"some": "data"}, files=FORCE_MULTIPART)
     assert response.json() == {"some": "data"}
@@ -171,7 +171,7 @@ def test_multi_items(tmpdir):
         }
 
 
-def test_multipart_request_mixed_files_and_data(tmpdir):
+def test_multipart_request_mixed_files_and_data(_tmpdir):
     client = TestClient(app)
     response = client.post(
         "/",
@@ -206,7 +206,7 @@ def test_multipart_request_mixed_files_and_data(tmpdir):
     }
 
 
-def test_multipart_request_with_charset_for_filename(tmpdir):
+def test_multipart_request_with_charset_for_filename(_tmpdir):
     client = TestClient(app)
     response = client.post(
         "/",
@@ -231,7 +231,7 @@ def test_multipart_request_with_charset_for_filename(tmpdir):
     }
 
 
-def test_multipart_request_without_charset_for_filename(tmpdir):
+def test_multipart_request_without_charset_for_filename(_tmpdir):
     client = TestClient(app)
     response = client.post(
         "/",
@@ -256,7 +256,7 @@ def test_multipart_request_without_charset_for_filename(tmpdir):
     }
 
 
-def test_multipart_request_with_encoded_value(tmpdir):
+def test_multipart_request_with_encoded_value(_tmpdir):
     client = TestClient(app)
     response = client.post(
         "/",
@@ -274,37 +274,37 @@ def test_multipart_request_with_encoded_value(tmpdir):
     assert response.json() == {"value": "Transférer"}
 
 
-def test_urlencoded_request_data(tmpdir):
+def test_urlencoded_request_data(_tmpdir):
     client = TestClient(app)
     response = client.post("/", data={"some": "data"})
     assert response.json() == {"some": "data"}
 
 
-def test_no_request_data(tmpdir):
+def test_no_request_data(_tmpdir):
     client = TestClient(app)
     response = client.post("/")
     assert response.json() == {}
 
 
-def test_urlencoded_percent_encoding(tmpdir):
+def test_urlencoded_percent_encoding(_tmpdir):
     client = TestClient(app)
     response = client.post("/", data={"some": "da ta"})
     assert response.json() == {"some": "da ta"}
 
 
-def test_urlencoded_percent_encoding_keys(tmpdir):
+def test_urlencoded_percent_encoding_keys(_tmpdir):
     client = TestClient(app)
     response = client.post("/", data={"so me": "data"})
     assert response.json() == {"so me": "data"}
 
 
-def test_urlencoded_multi_field_app_reads_body(tmpdir):
+def test_urlencoded_multi_field_app_reads_body(_tmpdir):
     client = TestClient(app_read_body)
     response = client.post("/", data={"some": "data", "second": "key pair"})
     assert response.json() == {"some": "data", "second": "key pair"}
 
 
-def test_multipart_multi_field_app_reads_body(tmpdir):
+def test_multipart_multi_field_app_reads_body(_tmpdir):
     client = TestClient(app_read_body)
     response = client.post(
         "/", data={"some": "data", "second": "key pair"}, files=FORCE_MULTIPART

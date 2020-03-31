@@ -242,5 +242,5 @@ class ServerErrorMiddleware:
         content = self.generate_plain_text(exc)
         return PlainTextResponse(content, status_code=500)
 
-    def error_response(self, request: Request, exc: Exception) -> Response:
+    def error_response(self, request: Request, _exc: Exception) -> Response:
         return PlainTextResponse("Internal Server Error", status_code=500)
