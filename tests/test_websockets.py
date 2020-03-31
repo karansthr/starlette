@@ -303,8 +303,8 @@ def test_subprotocol():
 
 
 def test_websocket_exception():
-    def app(scope):
-        async def asgi(receive, send):
+    def app(_scope):
+        async def asgi(_receive, _send):
             assert False
 
         return asgi
@@ -356,7 +356,7 @@ def test_websocket_scope_interface():
     async def mock_receive():
         pass  # pragma: no cover
 
-    async def mock_send(message):
+    async def mock_send(_message):
         pass  # pragma: no cover
 
     websocket = WebSocket(

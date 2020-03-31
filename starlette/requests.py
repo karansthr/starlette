@@ -33,7 +33,7 @@ class HTTPConnection(Mapping):
     any functionality that is common to both `Request` and `WebSocket`.
     """
 
-    def __init__(self, scope: Scope, receive: Receive = None) -> None:
+    def __init__(self, scope: Scope, _receive: Receive = None) -> None:
         assert scope["type"] in ("http", "websocket")
         self.scope = scope
 

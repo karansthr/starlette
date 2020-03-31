@@ -35,7 +35,7 @@ ASGI3App = typing.Callable[[Scope, Receive, Send], typing.Awaitable[None]]
 
 
 class _HeaderDict(requests.packages.urllib3._collections.HTTPHeaderDict):
-    def get_all(self, key: str, default: str) -> str:
+    def get_all(self, key: str, _default: str) -> str:
         return self.getheaders(key)
 
 

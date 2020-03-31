@@ -135,7 +135,7 @@ def test_graphql_context():
 class ASyncQuery(graphene.ObjectType):
     hello = graphene.String(name=graphene.String(default_value="stranger"))
 
-    async def resolve_hello(self, info, name):
+    async def resolve_hello(self, _info, name):
         return "Hello " + name
 
 

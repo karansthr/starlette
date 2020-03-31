@@ -6,7 +6,7 @@ from starlette.middleware.wsgi import WSGIMiddleware, build_environ
 from starlette.testclient import TestClient
 
 
-def hello_world(environ, start_response):
+def hello_world(_environ, start_response):
     status = "200 OK"
     output = b"Hello World!\n"
     headers = [
@@ -32,7 +32,7 @@ def raise_exception(environ, start_response):
     raise RuntimeError("Something went wrong")
 
 
-def return_exc_info(environ, start_response):
+def return_exc_info(_environ, start_response):
     try:
         raise RuntimeError("Something went wrong")
     except RuntimeError:

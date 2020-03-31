@@ -161,11 +161,11 @@ class URLPath(str):
     Used by the routing to return `url_path_for` matches.
     """
 
-    def __new__(cls, path: str, protocol: str = "", host: str = "") -> "URLPath":
+    def __new__(cls, path: str, protocol: str = "", _host: str = "") -> "URLPath":
         assert protocol in ("http", "websocket", "")
         return str.__new__(cls, path)  # type: ignore
 
-    def __init__(self, path: str, protocol: str = "", host: str = "") -> None:
+    def __init__(self, _path: str, protocol: str = "", host: str = "") -> None:
         self.protocol = protocol
         self.host = host
 
